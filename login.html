@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login | यांत्रिकी विभाग मातीकाम माहिती प्रणाली</title>
+
+<style>
+:root{
+  --primary:#1e40af;
+  --bg:#f3f4f6;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --danger:#b91c1c;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:"Noto Sans Devanagari", system-ui, sans-serif;
+  background:var(--bg);
+  padding:15px 20px 40px;
+}
+
+/* HEADER */
+
+.gov-header{
+  text-align:center;
+  margin-bottom:25px;
+  padding-bottom:15px;
+  border-bottom:3px solid var(--primary);
+  background:white;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.05);
+  padding-top:15px;
+}
+
+.gov-logos{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:20px;
+  margin-bottom:15px;
+}
+
+.center-logo{ width:85px; }
+.side-logo{ width:70px; }
+
+.gov-subtitle{
+  font-size:16px;
+  margin-bottom:6px;
+}
+
+.gov-title{
+  font-size:24px;
+  font-weight:700;
+  color:var(--primary);
+}
+
+/* LOGIN CARD */
+
+.container{
+  max-width:400px;
+  margin:auto;
+  background:var(--card);
+  padding:30px;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+h3{
+  text-align:center;
+  color:var(--primary);
+  margin-bottom:20px;
+}
+
+label{
+  font-weight:600;
+  display:block;
+  margin-bottom:6px;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  margin-bottom:15px;
+  font-size:14px;
+}
+
+input:focus{
+  border-color:var(--primary);
+  outline:none;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:var(--primary);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+button:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+}
+
+button:hover{
+  opacity:0.9;
+}
+.back-btn{
+margin-top:10px;
+background:#6b7280;
+}
+
+.back-btn:hover{
+opacity:0.9;
+}
+.error{
+  color:var(--danger);
+  text-align:center;
+  margin-top:10px;
+  font-weight:600;
+}
+
+@media(max-width:600px){
+  .center-logo{ width:75px; }
+  .side-logo{ width:65px; }
+  .gov-title{ font-size:20px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="gov-header">
+  <div class="gov-logos">
+    <img src="left-logo.png" class="side-logo">
+    <img src="main-logo.png" class="center-logo">
+    <img src="right-logo.png" class="side-logo">
+  </div>
+
+  <div class="gov-subtitle">
+    मा. कार्यकारी अभियंता यांत्रिकी विभाग (को.प्र), अलोरे अंतर्गत
+  </div>
+
+  <div class="gov-title">
+    यांत्रिकी विभाग मातीकाम माहिती प्रणाली
+  </div>
+</div>
+
+<div class="container">
+
+<h3>🔐 Admin Login</h3>
+
+<label>Username</label>
+<input type="text" id="username" placeholder="Username" autocomplete="off">
+
+<label>Password</label>
+<input type="password" id="password" placeholder="Password" autocomplete="off">
+
+<button id="loginBtn" onclick="login()">Login</button>
+  
+<button class="back-btn" onclick="goHome()">
+⬅ मुख्य पृष्ठावर जा
+</button>
+<div id="errorMsg" class="error"></div>
+
+</div>
+
+<script>
+
+const API_URL = "https://script.google.com/macros/s/AKfycbzOhvYrDFrXe6vo7hjeMkuFH0GJ2exdLNfzy9ZyPASiCu-JcmXY7yHTxixNq29tACB5Jg/exec";
+
+/* 🔐 Auto Redirect if Already Logged In */
+if(localStorage.getItem("token")){
+  window.location.href = "admin-dashboard.html";
+}
+
+/* 🔑 Enter Key Support */
+document.addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    login();
+  }
+});
+
+async function login(){
+
+  const btn = document.getElementById("loginBtn");
+  const errorBox = document.getElementById("errorMsg");
+
+  errorBox.innerText = "";
+  btn.disabled = true;
+
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  /* Validation */
+  if(!username || !password){
+    errorBox.innerText = "⚠️ Username आणि Password भरा";
+    btn.disabled = false;
+    return;
+  }
+
+  try {
+
+    const res = await fetch(API_URL + "?mode=login", {
+      method: "POST",
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    if(data.error){
+      errorBox.innerText = "❌ चुकीचे Username किंवा Password";
+      btn.disabled = false;
+      return;
+    }
+
+    /* Save Session */
+    localStorage.setItem("token", data.token);
+localStorage.setItem("subdivisionCode", data.subdivisionCode);
+localStorage.setItem("subdivisionName", data.subdivisionName);
+localStorage.setItem("role", data.role);
+
+    /* Redirect */
+    window.location.href = "admin-dashboard.html";
+
+  } catch(err){
+
+    errorBox.innerText = "⚠️ Server शी संपर्क होऊ शकला नाही";
+    btn.disabled = false;
+  }
+}
+function goHome(){
+window.location.href="index.html";
+}
+</script>
+
+</body>
+</html>
