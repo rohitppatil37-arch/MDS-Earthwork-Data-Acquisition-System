@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard | यांत्रिकी विभाग मातीकाम माहिती प्रणाली</title>
+
+<style>
+
+:root{
+  --primary:#1e40af;
+  --bg:#f3f4f6;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --danger:#b91c1c;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:"Noto Sans Devanagari",system-ui,sans-serif;
+  background:var(--bg);
+  padding:15px 20px 40px;
+}
+
+/* HEADER */
+
+.gov-header{
+  text-align:center;
+  margin-bottom:25px;
+  padding-bottom:15px;
+  border-bottom:3px solid var(--primary);
+  background:white;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.05);
+  padding-top:15px;
+}
+
+.gov-logos{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:20px;
+  margin-bottom:15px;
+}
+
+.center-logo{width:85px;}
+.side-logo{width:70px;}
+
+.gov-title{
+  font-size:26px;
+  font-weight:700;
+  color:var(--primary);
+}
+
+.gov-subtitle{
+  font-size:15px;
+  margin-bottom:5px;
+}
+
+/* CONTAINER */
+
+.container{
+  max-width:900px;
+  margin:auto;
+  background:var(--card);
+  padding:25px;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* SUBDIVISION */
+
+.subdivision-banner{
+  text-align:center;
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  padding:10px;
+  border-radius:8px;
+  font-weight:600;
+  color:#1e40af;
+  margin-bottom:20px;
+}
+
+/* REPORT TITLE */
+
+.section-title{
+  text-align:center;
+  font-size:20px;
+  font-weight:700;
+  color:var(--primary);
+  margin-bottom:20px;
+}
+
+/* GRID */
+
+.report-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+/* CARD */
+
+.report-card{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:18px;
+  background:#f9fafb;
+  transition:0.2s;
+}
+
+.report-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 16px rgba(0,0,0,0.08);
+}
+
+.report-card label{
+  font-weight:600;
+  display:block;
+  margin-bottom:10px;
+}
+
+/* PERIOD */
+
+.period-row{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.period-row input{
+  flex:1;
+  padding:9px;
+  border-radius:8px;
+  border:1px solid var(--border);
+}
+
+/* BUTTON */
+
+button{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+  background:var(--primary);
+  color:white;
+}
+
+button:hover{
+  opacity:0.9;
+}
+  
+button:disabled{
+opacity:0.6;
+cursor:not-allowed;
+}
+/* LOGOUT */
+
+.logout{
+  margin-top:25px;
+  background:var(--danger);
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+  .report-grid{
+    grid-template-columns:1fr;
+  }
+
+  .period-row{
+    flex-direction:column;
+  }
+
+  .center-logo{width:75px;}
+  .side-logo{width:65px;}
+
+}
+/* REPORT LOADER */
+
+.report-loader{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+font-weight:600;
+color:#1e40af;
+margin-bottom:15px;
+}
+
+.spinner{
+width:18px;
+height:18px;
+border:3px solid #c7d2fe;
+border-top:3px solid #1e40af;
+border-radius:50%;
+animation:spin 0.8s linear infinite;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="gov-header">
+
+<div class="gov-logos">
+<img src="left-logo.png" class="side-logo">
+<img src="main-logo.png" class="center-logo">
+<img src="right-logo.png" class="side-logo">
+</div>
+
+<div class="gov-subtitle">
+मा. कार्यकारी अभियंता यांत्रिकी विभाग (को.प्र), अलोरे अंतर्गत
+</div>
+
+<div class="gov-title">
+यांत्रिकी विभाग मातीकाम माहिती प्रणाली
+</div>
+
+</div>
+
+
+<div class="container">
+
+<div class="subdivision-banner" id="subdivisionName"></div>
+
+<div class="section-title">
+📊 रिपोर्ट डाउनलोड
+</div>
+
+<div id="reportStatus" class="report-loader" style="display:none;">
+<div class="spinner"></div>
+<div id="reportText">अहवाल तयार होत आहे... कृपया थोडा वेळ थांबा</div>
+</div>
+
+<div class="report-grid">
+
+
+<!-- MACHINE REPORT -->
+
+<div class="report-card">
+
+<label>⚙️ सयंत्राच्या तास / किमी चा अहवाल</label>
+
+<div class="period-row">
+<input type="date" id="m_from">
+<input type="date" id="m_to">
+</div>
+
+<button onclick="downloadReport('machine')">
+⬇️ डाउनलोड करा
+</button>
+
+</div>
+
+
+<!-- GPS REPORT -->
+
+<div class="report-card">
+
+<label>📡 GPS अहवाल</label>
+
+<div class="period-row">
+<input type="date" id="g_from">
+<input type="date" id="g_to">
+</div>
+
+<button onclick="downloadReport('gps')">
+⬇️ डाउनलोड करा
+</button>
+
+</div>
+
+
+<!-- ATTENDANCE REPORT -->
+
+<div class="report-card">
+
+<label>👷 हजेरी अहवाल</label>
+
+<div class="period-row">
+<input type="date" id="a_from">
+<input type="date" id="a_to">
+</div>
+
+<button onclick="downloadReport('attendance')">
+⬇️ डाउनलोड करा
+</button>
+
+</div>
+
+
+<!-- PENDING REPORT -->
+
+<div class="report-card">
+
+<label>💰 प्रलंबित रकमेचा अहवाल</label>
+
+<div class="period-row">
+<input type="date" id="p_from">
+<input type="date" id="p_to">
+</div>
+
+<button onclick="downloadReport('pending')">
+⬇️ डाउनलोड करा
+</button>
+
+</div>
+
+</div>
+
+
+<button class="logout" onclick="logout()">
+🚪 लॉगआउट
+</button>
+
+</div>
+
+
+<script>
+
+const API_URL="https://script.google.com/macros/s/AKfycbzOhvYrDFrXe6vo7hjeMkuFH0GJ2exdLNfzy9ZyPASiCu-JcmXY7yHTxixNq29tACB5Jg/exec";
+
+
+document.addEventListener("DOMContentLoaded",function(){
+
+const token=localStorage.getItem("token");
+const subName=localStorage.getItem("subdivisionName");
+const subCode=localStorage.getItem("subdivisionCode");
+
+if(!token||!subCode){
+window.location.href="login.html";
+return;
+}
+
+document.getElementById("subdivisionName").innerText=
+"उपविभाग : "+subName;
+
+const today=new Date().toISOString().split("T")[0];
+
+const startMonth=new Date(
+new Date().getFullYear(),
+new Date().getMonth(),
+1
+).toISOString().split("T")[0];
+
+document.querySelectorAll("input[id$='_from']")
+.forEach(el=>el.value=startMonth);
+
+document.querySelectorAll("input[id$='_to']")
+.forEach(el=>el.value=today);
+
+});
+
+
+function downloadReport(type){
+
+document.getElementById("reportStatus").style.display="block";
+document.querySelectorAll("button").forEach(b=>b.disabled=true);
+const texts={
+machine:"⚙️ मशीन अहवाल तयार होत आहे...",
+gps:"📡 GPS अहवाल तयार होत आहे...",
+attendance:"👷 हजेरी अहवाल तयार होत आहे...",
+pending:"💰 प्रलंबित रक्कम अहवाल तयार होत आहे..."
+};
+
+document.getElementById("reportText").innerText=texts[type];
+const token=localStorage.getItem("token");
+const sub=localStorage.getItem("subdivisionCode");
+
+let from,to;
+
+if(type==="machine"){
+from=document.getElementById("m_from").value;
+to=document.getElementById("m_to").value;
+}
+
+if(type==="gps"){
+from=document.getElementById("g_from").value;
+to=document.getElementById("g_to").value;
+}
+
+if(type==="attendance"){
+from=document.getElementById("a_from").value;
+to=document.getElementById("a_to").value;
+}
+
+if(type==="pending"){
+from=document.getElementById("p_from").value;
+to=document.getElementById("p_to").value;
+}
+
+/* date validation */
+
+if(!from || !to){
+alert("कृपया दिनांक निवडा.");
+document.getElementById("reportStatus").style.display="none";
+document.querySelectorAll("button").forEach(b=>b.disabled=false);
+return;
+}
+
+const url=
+API_URL+
+"?mode=report"+
+"&type="+type+
+"&from="+from+
+"&to="+to+
+"&subdivision="+sub+
+"&token="+token;
+
+fetch(url)
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("reportStatus").style.display="none";
+
+document.querySelectorAll("button").forEach(b=>b.disabled=false);
+
+if(data.error){
+alert(data.error);
+return;
+}
+
+saveBase64File(data.file,data.name);
+})
+.catch(()=>{
+document.getElementById("reportStatus").style.display="none";
+
+document.querySelectorAll("button").forEach(b=>b.disabled=false);
+
+alert("Report generate करताना समस्या आली.");
+});
+}
+function saveBase64File(base64,name){
+
+const bytes = atob(base64);
+
+const array = new Uint8Array(bytes.length);
+
+for(let i=0;i<bytes.length;i++){
+array[i] = bytes.charCodeAt(i);
+}
+
+const blob = new Blob(
+[array],
+{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
+);
+
+const link=document.createElement("a");
+
+link.href=URL.createObjectURL(blob);
+
+link.download=name || "Report.xlsx";
+
+document.body.appendChild(link);
+
+link.click();
+
+setTimeout(()=>{
+URL.revokeObjectURL(link.href);
+},2000);
+
+document.body.removeChild(link);
+
+}
+function logout(){
+
+if(confirm("तुम्हाला लॉगआउट करायचे आहे का?")){
+
+localStorage.removeItem("token");
+localStorage.removeItem("subdivisionCode");
+localStorage.removeItem("subdivisionName");
+
+window.location.href="login.html";
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
